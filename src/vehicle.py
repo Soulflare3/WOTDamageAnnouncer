@@ -404,9 +404,7 @@ class Vehicle(BigWorld.Entity):
                             command = command[:seperator]
 
                     result = ""
-                    if command == "defender_user":
-                        result = current["name"]
-                    elif command == "defender_tier":
+                    if command == "defender_tier":
                         result = str(current["vehicleType"].level)
                     elif command == "defender_tank_long":
                         result = unicode(current["vehicleType"].type.userString, 'utf-8')
@@ -423,7 +421,10 @@ class Vehicle(BigWorld.Entity):
                             if tag == "heavyTank":
                                 pass
                     elif command == "user":
-                        result = attacker["name"]
+                        if self.__battleID == p.playerVehicleID and attackerID != self.__battleID and p.team == attacker["team"]:
+                            result = attacker["name"]
+                        else:
+                            raise Exception("Invalid Command: %s" % (command))
                     elif command == "tier":
                         result = str(attacker["vehicleType"].level)
                     elif command == "tank_long":
@@ -462,7 +463,7 @@ class Vehicle(BigWorld.Entity):
                                 if price[1] == 0:
                                     result = str(price[0])
                                 else:
-                                    result = str(price[1] * 400) 
+                                    result = str(price[1] * 400)
                     elif command == "shell_type":
                         for shell in attacker["vehicleType"].gun["shots"]:
                             if self.__hitType == shell["shell"]["effectsIndex"]:
@@ -708,7 +709,7 @@ class Vehicle(BigWorld.Entity):
         if self.isPlayer:
             BigWorld.wgDelEdgeDetectEntity(self)
         self.__stopExtras()
-        if hasattr(self, 'marker'): 
+        if hasattr(self, 'marker'):
             manager = g_windowsManager.battleWindow.vMarkersManager
             manager.destroyMarker(self.marker)
             self.marker = -1
@@ -755,7 +756,7 @@ class Vehicle(BigWorld.Entity):
     def __isDestructibleBroken(self, chunkID, itemIndex, matKind, itemFilename):
         desc = AreaDestructibles.g_cache.getDescByFilename(itemFilename)
         if desc is None:
-            return False    
+            return False
         ctrl = AreaDestructibles.g_destructiblesManager.getController(chunkID)
         if ctrl is None:
             return False
